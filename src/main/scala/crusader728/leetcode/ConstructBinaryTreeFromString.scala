@@ -1,6 +1,6 @@
 package scala.crusader728.leetcode
 
-object Str2Tree {
+object ConstructBinaryTreeFromString {
   abstract class R[+A]
   case class SUCC[A](a: A, remaining: List[Char]) extends R[A]
   case object FAIL extends R[Nothing]

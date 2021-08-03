@@ -22,6 +22,6 @@ object LongestIncreasingSubsequence {
         }
       }
     }
-    (0 until nums.length).map(i => go(i)).max
+    nums.indices.map(i => go(i)).max
   }
 }
