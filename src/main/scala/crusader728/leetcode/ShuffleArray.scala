@@ -13,12 +13,12 @@ object ShuffleArray {
 
     /** Returns a random shuffling of the array. */
     def shuffle(): Array[Int] = {
-      val result = Array.ofDim[Int](origin.size)
-      for(i <- 0 until origin.size) {
+      val result = Array.ofDim[Int](origin.length)
+      for(i <- origin.indices) {
         result(i) = origin(i)
       }
-      for(i <- 0 until origin.size) {
-        val idx = rng.nextInt(origin.size - i) + i
+      for(i <- origin.indices) {
+        val idx = rng.nextInt(origin.length - i) + i
         val temp = result(i)
         result(i) = result(idx)
         result(idx) = temp

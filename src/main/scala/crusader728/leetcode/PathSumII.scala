@@ -6,7 +6,7 @@ object PathSumII {
     def helper(root: TreeNode, target: Int, cont: List[List[Int]] => List[List[Int]]): List[List[Int]] = {
       root match {
         case null => cont(Nil)
-        case leaf if leaf.left == null && leaf.right == null => if(leaf.value == target) {
+        case leaf if leaf.left == null && leaf.right == null => if (leaf.value == target) {
           cont(List(List(leaf.value)))
         } else {
           cont(Nil)
