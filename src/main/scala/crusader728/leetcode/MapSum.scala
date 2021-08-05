@@ -32,7 +32,7 @@ object MapSum {
       }
     }
 
-    var root = emptyTrie
+    private var root = emptyTrie
 
 
     def insert(key: String, `val`: Int) {
