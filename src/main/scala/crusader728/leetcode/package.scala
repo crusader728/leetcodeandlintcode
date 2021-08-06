@@ -38,4 +38,9 @@ package object leetcode {
     var child: Node = null
   }
 
+   class NaryTreeNode(var _value: Int) {
+       var value: Int = _value
+       var children: List[NaryTreeNode] = List()
+     }
+
 }
