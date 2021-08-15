@@ -42,5 +42,4 @@ package object leetcode {
        var value: Int = _value
        var children: List[NaryTreeNode] = List()
      }
-
 }
