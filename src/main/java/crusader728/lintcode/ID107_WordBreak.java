@@ -49,7 +49,6 @@ public class ID107_WordBreak {
         }
         int[] memo = new int[s.length() + 1];
         Arrays.fill(memo, -1);
-        boolean result = false;
         boolean containsAll = true;
         for(int i = 0; i < 26; ++i) {
             String single = String.valueOf((char)('a' + i));
