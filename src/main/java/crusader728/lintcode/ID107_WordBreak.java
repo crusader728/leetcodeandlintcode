@@ -54,7 +54,6 @@ public class ID107_WordBreak {
             String single = String.valueOf((char)('a' + i));
             if(!wordSet.contains(single)) {
                 containsAll = false;
-                System.out.println(String.format("doesn't contains %s", single));
                 break;
             }
         }
