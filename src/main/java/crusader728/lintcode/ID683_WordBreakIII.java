@@ -8,12 +8,10 @@ import java.util.Set;
 public class ID683_WordBreakIII {
     private static class TrieNode {
         private boolean wordHere;
-        private String word;
         private Map<Character, TrieNode> children;
 
         TrieNode() {
             this.wordHere = false;
-            this.word = null;
             this.children = new HashMap<>();
         }
     }
@@ -21,7 +19,6 @@ public class ID683_WordBreakIII {
     private void insert(String s, int index, TrieNode node) {
         if(index == s.length()) {
             node.wordHere = true;
-            node.word = s;
         } else {
             char ch = s.charAt(index);
             if(!node.children.containsKey(ch)) {
@@ -42,9 +39,8 @@ public class ID683_WordBreakIII {
         for(String word: dict) {
             insert(word.toLowerCase(), 0, root);
         }
-        int result = helper(s.toLowerCase(), root, 0, 0, root, memo);
 
-        return result;
+        return helper(s.toLowerCase(), root, 0, 0, root, memo);
     }
 
     private int helper(String s, TrieNode root, int start, int pivot, TrieNode prev, int[] memo) {
