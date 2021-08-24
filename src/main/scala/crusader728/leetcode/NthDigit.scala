@@ -7,7 +7,7 @@ object NthDigit {
       val size = Math.pow(10, length - 1).toLong * 9 * length
       if(x.toLong < size) {
         val nth = x / length
-        val offset = x % length.toInt
+        val offset = x % length
         val number = Math.pow(10, length - 1).toInt + nth
         number.toString.charAt(offset) - '0'
       } else {

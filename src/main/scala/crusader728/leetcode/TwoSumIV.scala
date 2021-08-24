@@ -2,8 +2,10 @@ package scala.crusader728.leetcode
 
 object TwoSumIV {
   private def stream(root: TreeNode): LazyList[TreeNode] = {
-    case null => LazyList.empty
-    case _ => stream(root.left) #::: (root #:: stream(root.right))
+    root match {
+      case null => LazyList.empty
+      case _ => stream(root.left) #::: (root #:: stream(root.right))
+    }
   }
 
 
