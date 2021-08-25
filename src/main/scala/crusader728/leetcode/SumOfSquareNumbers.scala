@@ -1,7 +1,6 @@
 package scala.crusader728.leetcode
 
-class SumOfSquareNumbers {
-
+object SumOfSquareNumbers {
   private def isSquareNumber(i: Int): Boolean = {
     val root = Math.sqrt(i).floor.toInt
     root * root == i
