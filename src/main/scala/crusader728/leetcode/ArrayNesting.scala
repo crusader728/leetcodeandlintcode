@@ -2,8 +2,6 @@ package scala.crusader728.leetcode
 
 object ArrayNesting {
   def arrayNesting(nums: Array[Int]): Int = {
-    val total = (0 until nums.length - 1).toSet
-
     @scala.annotation.tailrec
     def helper(q: Option[Int], total: Set[Int], visited: Set[Int], max: Int): Int = {
       if (q.isEmpty && total.isEmpty) {
@@ -16,7 +14,7 @@ object ArrayNesting {
         helper(newQ, newTotal, newVisited, max)
       }
     }
-
+    val total = (0 until nums.length - 1).toSet
     helper(Some(nums(0)), total, Set.empty, Int.MinValue)
   }
 }
