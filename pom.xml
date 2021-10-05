@@ -29,6 +29,13 @@
                 </executions>
                 <configuration>
                     <scalaVersion>${scala.version}</scalaVersion>
+                    <compilerPlugins>
+                        <compilerPlugin>
+                            <groupId>org.typelevel</groupId>
+                            <artifactId>kind-projector_2.13.6</artifactId>
+                            <version>0.13.2</version>
+                        </compilerPlugin>
+                    </compilerPlugins>
                 </configuration>
             </plugin>
         </plugins>
