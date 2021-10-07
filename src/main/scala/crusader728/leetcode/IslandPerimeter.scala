@@ -1,8 +1,8 @@
 package scala.crusader728.leetcode
 
-import scala.annotation.tailrec
-
 object IslandPerimeter {
+  import scala.util.control.TailCalls._
+
   val delta: List[(Int, Int)] = List((0, 1), (0, -1), (1, 0), (-1, 0))
   def islandPerimeter(grid: Array[Array[Int]]): Int = {
     indices(grid).dropWhile { case (i, j) => grid(i)(j) != 1 }
@@ -27,19 +27,19 @@ object IslandPerimeter {
   def bfs(grid: Array[Array[Int]], start: (Int, Int)): LazyList[(Int, Int)] = {
     val visited = scala.collection.mutable.HashSet.empty[(Int, Int)]
     visited += start
-    def loop(l: LazyList[(Int, Int)]): LazyList[(Int, Int)] = {
+    def loop(l: LazyList[(Int, Int)]): TailRec[LazyList[(Int, Int)]] = {
       if(l.isEmpty) {
-        l
+        done(l)
       } else {
         val (x, y) = l.head
         val children = delta
           .map {case (dx, dy) => (x + dx, y + dy)}
           .filter {case (i, j) => 0 <= i && i < grid.length && 0 <= j && j < grid(i).length && grid(i)(j) == 1 && !visited.contains((i, j))}
         visited.addAll(children)
-        loop(l.tail.appendedAll(children)).prepended(l.head)
+        tailcall(loop(l.tail.appendedAll(children))).map(r => r.prepended(l.head))
       }
     }
 
-    loop(LazyList(start))
+    loop(LazyList(start)).result
   }
 }
