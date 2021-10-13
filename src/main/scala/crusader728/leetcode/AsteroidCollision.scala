@@ -8,7 +8,6 @@ object AsteroidCollision {
       if(i < 0) {
         i :: acc
       } else {
-
         loop(i :: acc)
       }
     }.toArray
