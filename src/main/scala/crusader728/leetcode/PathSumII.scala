@@ -1,37 +1,24 @@
 package scala.crusader728.leetcode
 
+
 object PathSumII {
+  import scala.util.control.TailCalls._
+
+  type Sol = List[Int]
   def pathSum(root: TreeNode, targetSum: Int): List[List[Int]] = {
-    @scala.annotation.tailrec
-    def helper(root: TreeNode, target: Int, cont: List[List[Int]] => List[List[Int]]): List[List[Int]] = {
-      root match {
-        case null => cont(Nil)
-        case leaf if leaf.left == null && leaf.right == null => if (leaf.value == target) {
-          cont(List(List(leaf.value)))
-        } else {
-          cont(Nil)
-        }
-        case _ => helper(root.left, target - root.value, lcont(root.right, target, root.value, cont))
-      }
-    }
+    helper(root, targetSum, Nil, Nil).result
+  }
 
-    def lcont(
-               right: TreeNode,
-               target: Int,
-               value: Int,
-               k: List[List[Int]] => List[List[Int]]
-             ): List[List[Int]] => List[List[Int]] = lr => {
-      helper(right, target - value, rcont(lr, value, k))
+  def helper(root: TreeNode, target: Int, path: List[Int], acc: List[Sol]): TailRec[List[Sol]] = root match {
+    case n if n == null => done(acc)
+    case n if n.left == null && n.right == null => if(n.value == target) {
+      done((n.value :: path).reverse :: acc)
+    }else {
+      done(acc)
     }
-
-    def rcont(
-               lr: List[List[Int]],
-               value: Int,
-               k: List[List[Int]] => List[List[Int]]
-             ): List[List[Int]] => List[List[Int]] = rr => {
-      k((lr ++ rr).map(l => value :: l))
-    }
-
-    helper(root, targetSum, identity)
+    case n@_ => for {
+      accleft <- helper(n.left, target - n.value, n.value :: path, acc)
+      r <- helper(n.right, target - n.value, n.value :: path, accleft)
+    } yield r
   }
 }
