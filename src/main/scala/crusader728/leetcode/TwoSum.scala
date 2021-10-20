@@ -1,29 +1,35 @@
 package scala.crusader728.leetcode
 
+
 object TwoSum {
   def twoSum(nums: Array[Int], target: Int): Array[Int] = {
-    val memo = scala.collection.mutable.HashMap.empty[Int, Int]
-    @scala.annotation.tailrec
-    def loop(i: Int): (Int, Int) = {
-      i match {
-        case n if n == nums.length => throw new RuntimeException
-        case _ => {
-          val other = target - nums(i)
-          memo.get(other) match {
-            case None => {
-              memo += nums(i) -> i
-              loop(i + 1)
-            }
-            case Some(j) => (i, j)
-          }
-        }
+    Solver(nums, target).solution.head
+  }
+  private case class Solver(nums: Array[Int], target: Int) {
+    type State = Map[Int, List[Int]]
+    private def step(i: Int, state: State): (State, List[(Int, Int)]) = {
+      val other = target - nums(i)
+      val output = state.getOrElse(other, List.empty).map(x => (x, i))
+      val nextState = state + (nums(i) -> (i :: state.getOrElse(nums(i), List.empty)))
+      (nextState, output)
+    }
+
+    private def stepF(i: Int): State => (State, List[(Int, Int)]) = s => step(i, s)
+
+    type StateM[A] = State => (State, A)
+
+    private def sequence[A](input: LazyList[StateM[A]]): StateM[LazyList[A]] = {
+      s => input.foldLeft((s, LazyList.empty[A])) { case ((state, v), sm) =>
+        val (nextState, output) = sm.apply(state)
+        (nextState, output #:: v)
       }
     }
 
-    val (i, j) = loop(0)
-    val ans = Array.ofDim[Int](2)
-    ans(0) = i
-    ans(1) = j
-    ans
+    val solution: LazyList[Array[Int]] = {
+      val output = sequence(LazyList.from(nums.indices).map(stepF)).apply(Map.empty)._2
+      output.flatten.map { case (i, j) => Array(i, j) }
+    }
   }
+
+
 }
