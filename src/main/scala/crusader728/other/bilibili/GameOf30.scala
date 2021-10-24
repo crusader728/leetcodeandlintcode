@@ -12,20 +12,21 @@ object GameOf30 {
   }
 
   case class Solver(m1: collection.mutable.HashMap[Int, Boolean]) {
-    val dpFirst: Int => Boolean = Memo.mutableMapMemo[Int, Boolean](m1).memo {
+    val dp: Int => Boolean = Memo.mutableMapMemo[Int, Boolean](m1).memo {
       case n if n >= 30 => false
       case n@_ if n + 3 >= 30 => true
       case n@_ =>
         (for {
-          i <- List(n + 1, n + 2, n + 3).filter(i => !dpFirst(i))
+          i <- List(n + 1, n + 2, n + 3).filter(i => !dp(i))
           j <- List(1, 2, 3)
-        } yield (i + j)).exists(x => dpFirst(x))
+        } yield (i + j)).exists(x => dp(x))
     }
   }
 
   def main(args: Array[String]): Unit = {
     val m1 = collection.mutable.HashMap.empty[Int, Boolean]
-    val r = Solver(m1).dpFirst(0)
-    println(m1)
+    if(Solver(m1).dp(0)) {
+      println(List(1,2,3).filter(i => !m1(i)).head)
+    }
   }
 }
