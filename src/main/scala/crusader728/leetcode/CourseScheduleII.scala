@@ -2,91 +2,97 @@ package scala.crusader728.leetcode
 
 object CourseScheduleII {
   type Vertex = Int
-  type Edge = (Int, Int)
-  type Graph = (Int, Map[Vertex, List[Edge]])
-  type State = Set[Vertex]
+  type VertexCount = Int
+  type Edge = (Vertex, Vertex)
+  type Adj = Map[Vertex, Set[Edge]]
+  type Graph = (VertexCount, Adj)
 
-  case class Tree(v: Int, children: LazyList[Tree])
+  val edgeStart: Edge => Vertex = e => e._1
+  val edgeEnd: Edge => Vertex = e => e._2
+  val getAdj: Graph => Adj = g => g._2
+  val getNodeCounts: Graph => VertexCount = g => g._1
+  val outs: Graph => Vertex => Set[Edge] = g => v => getAdj(g).getOrElse(v, Set.empty)
+
+  def trans(g: Graph): Graph = {
+    val c = getNodeCounts(g)
+    val adj = getAdj(g)
+
+    val transposed = adj.foldLeft(Map.empty[Vertex, Set[Edge]]) {case (a, (k, v)) => {
+      v.foldLeft(a) { case (acc, e) => {
+        val start = edgeStart(e)
+        val end = edgeEnd(e)
+        acc + (end -> (acc.getOrElse(end, Set.empty[Edge]) + ((end, start))))
+      }}
+    }}
+    (c, transposed)
+  }
+
+  def vertices(g: Graph): LazyList[Vertex] = LazyList.from(0 until getNodeCounts(g))
+
+  case class Tree(v: Vertex, children: LazyList[Tree])
   type Forest = LazyList[Tree]
 
+  def generate(g: Graph, v: Vertex): Tree = Tree(v, LazyList.from(outs(g)(v)).map(e => generate(g, edgeEnd(e))))
 
-  private def buildGraph(n: Int, edges: Seq[(Int, Int)]): Graph = {
-    val adj = edges.foldRight(Map.empty[Vertex, List[Edge]]) {case (arr, acc) =>
-      val start = arr._1
-      val end = arr._2
-      val newL = acc.getOrElse(start, List.empty)
-      acc + (start -> ((start, end) :: newL))
-    }
-    val result = (0 until n).foldRight(adj) { case (i, acc) => {
-      if(acc.contains(i)) acc else acc + (i -> List.empty)
-    }}
-    (n, result)
-  }
 
-  def vertices(g: Graph): LazyList[Vertex] = LazyList.from(g._2.keys)
-
-  def chop(forest: Forest): Forest = {
-    def helper(f: Forest, s: Set[Int]): (Set[Int], Forest) = f match {
-      case x if x.isEmpty => (s, x)
-      case x@_ =>
-        val head = x.head
-        val v = head.v
-        val children = head.children
-        val ts = x.tail
-        if(s.contains(v)) {
-          helper(ts, s)
+  def prune(forest: Forest): Forest = {
+    type State = Set[Vertex]
+    def helper(f: Forest, s: State): (Forest, State) = {
+      if(f.isEmpty) {
+        (f, s)
+      } else {
+        val tree = f.head
+        if(s.contains(tree.v)) {
+          helper(f.tail, s)
         } else {
-          val s1 = s + v
-          val (s2, subs) = helper(children, s1)
-          val (s3, tss) = helper(ts, s2)
-          (s3, Tree(v, subs) #:: tss)
+          val s1 = s + tree.v
+          val (children, s2) = helper(tree.children, s1)
+          val (tail, s3) = helper(f.tail, s2)
+          (Tree(tree.v, children) #:: tail, s3)
         }
+      }
     }
 
-    helper(forest, Set.empty)._2
+    helper(forest, Set.empty)._1
   }
 
-  def edges(graph: Graph): List[Edge] = {
-    graph._2.values.foldRight(List.empty[Edge]) {case (l, acc) => l ++ acc}
-  }
+  def dfs(g: Graph, vertices: LazyList[Vertex]): Forest = prune(vertices.map(v => generate(g, v)))
 
-  def reverseEdge(edges: List[Edge]): List[Edge] = {
-    edges.map {_.swap}
-  }
-
-  def transpose(graph: Graph): Graph = buildGraph(graph._1, reverseEdge(edges(graph)))
-
-  private def generate(graph: Graph, vertex: Vertex): Tree = {
-    Tree(vertex, LazyList.from(graph._2.getOrElse(vertex, List.empty)).map {case (_, e) => generate(graph, e) })
-  }
-
-  private def dfs(graph: Graph, vs: LazyList[Vertex]): Forest = chop(vs.map(v => generate(graph, v)))
-
-  private def dff(graph: Graph): Forest = dfs(graph, vertices(graph))
-
-  def preorderF(children: LazyList[Tree]): LazyList[Vertex] = children.flatMap(preorder)
-
-  def preorder(tree: Tree): LazyList[Vertex] = tree.v #:: preorderF(tree.children)
-
-  def postOrderF(children: LazyList[Tree]): LazyList[Vertex] = children.flatMap(postOrder)
-
+  def dff(g: Graph): Forest = dfs(g, vertices(g))
+  //algorithm 1: topology sort
   def postOrder(tree: Tree): LazyList[Vertex] = postOrderF(tree.children) #::: LazyList(tree.v)
+  def postOrderF(forest: Forest): LazyList[Vertex] = for {
+    t <- forest
+    v <- postOrder(t)
+  } yield v
 
-  def scc(graph: Graph): Forest = {
-    dfs(graph, postOrderF(dff(transpose(graph))).reverse)
+  def topoSort(g: Graph): LazyList[Vertex] = postOrderF(dff(g)).reverse
+  //algorithm 2: strongly connected component
+  def scc(g: Graph): Forest = dfs(g, postOrderF(dff(trans(g))).reverse)
+  def hasCycle(graph: Graph): Boolean = scc(graph).exists(t => t.children.nonEmpty)
+
+  //build graph
+  implicit class ToGraphOps(val edges: Array[Array[Int]]) extends AnyVal {
+    def toGraph(numCourses: Int): Graph = {
+      val adj = edges.foldLeft(Map.empty[Vertex, Set[Edge]]) {case (acc, arr) => {
+        val s = arr(1)
+        val e = arr(0)
+        acc + (s -> (acc.getOrElse(s, Set.empty) + ((s, e))))
+      }}
+      (numCourses, adj)
+    }
   }
-
-  def topSort(g: Graph): LazyList[Vertex] = postOrderF(dff(g)).reverse
-
   def findOrder(numCourses: Int, prerequisites: Array[Array[Int]]): Array[Int] = {
-    val graph = buildGraph(numCourses, prerequisites.map(arr => (arr(0), arr(1))))
-    val hasCycle = scc(graph).exists(t => t.children.nonEmpty)
-    if(hasCycle) {
+    val graph: Graph = prerequisites.toGraph(numCourses)
+    if(hasCycle(graph)) {
       Array()
     } else {
-      topSort(graph).reverse.toArray
+      topoSort(graph).toArray
     }
   }
 
+  def main(args: Array[String]): Unit = {
+    findOrder(2, Array(Array(1, 0)))
+  }
 
 }
