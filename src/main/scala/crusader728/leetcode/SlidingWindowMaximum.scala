@@ -31,12 +31,9 @@ object SlidingWindowMaximum {
   def step(nums: Array[Int], k: Int)(i: Idx)(state: State): (Value, State) = {
     val left = leftOfWindow(getWindow(state))
     val right = rightOfWindow(getWindow(state))
-
-
     val newRight = right + 1
     val value = nums(i)
     val q = getQ(state)
-    println(i, left, right, q)
     if(newRight - left + 1> k) {
       val newLeft = left + 1
       val newWindow = (newLeft, newRight)

@@ -13,6 +13,17 @@ package object leetcode {
     var x: Int = _x
   }
 
+  trait Show[A] {
+    def show(a: A): String
+  }
+
+  implicit val listNodeShow: Show[ListNode] = new Show[ListNode] { self =>
+    override def show(a: ListNode): String = a match {
+      case null => "null"
+      case _ => s"ListNode(x = ${a.x}, next = ${self.show(a.next)})"
+    }
+  }
+
   trait NestedInteger {
 
     // Return true if this NestedInteger holds a single integer, rather than a nested list.
