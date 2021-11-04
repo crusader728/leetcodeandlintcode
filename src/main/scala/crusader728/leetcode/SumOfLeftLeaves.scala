@@ -9,11 +9,11 @@ object SumOfLeftLeaves {
       case null => done(0)
       case n if n.left == null && n.right == null => if(isLeft) done(n.value) else done(0)
       case _ => for {
-        left <- helper(node.left, true)
-        right <- helper(node.right, false)
+        left <- helper(node.left, isLeft = true)
+        right <- helper(node.right, isLeft = false)
       } yield left + right
     }
 
-    helper(root, false).result
+    helper(root, isLeft = false).result
   }
 }
