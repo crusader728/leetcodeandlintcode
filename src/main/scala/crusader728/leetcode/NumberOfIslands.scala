@@ -3,34 +3,54 @@ package scala.crusader728.leetcode
 object NumberOfIslands {
   type R = Int
   type C = Int
-  type Cord = (Int, Int)
+  type Cord = (R, C)
   type Grid = Array[Array[Char]]
-  val deltas = List((1, 0), (-1, 0), (0, 1), (0, -1))
-    def numIslands(grid: Array[Array[Char]]): Int = {
-      val visited = collection.mutable.HashSet.empty[Cord]
-      val cords = for {
-        i <- grid.indices
-        j <- grid(i).indices
-      } yield (i, j)
-      cords.foldLeft(0) {case (acc, cord) => {
-        if(grid(cord._1)(cord._2) != '1') {
-          acc
-        } else if(visited.contains(cord)) {
-          acc
-        } else {
-          def dfs(v: Cord): Unit = {
-            visited += v
-            deltas.foreach { case (dx, dy) => {
-              val newR = dx + v._1
-              val newC = dy + v._2
-              if(newR >= 0 && newR < grid.length && newC >= 0 && newC < grid(newR).length && grid(newR)(newC) == '1') {
-                dfs((newR, newC))
-              }
-            }}
-          }
-          dfs(cord)
-          acc + 1
-        }
-      }}
+
+  val getR: Cord => R = _._1
+  val getC: Cord => C = _._2
+
+  val deltas: LazyList[Cord] = LazyList((-1, 0), (1, 0), (0, -1), (0, 1))
+
+  val cords: Grid => LazyList[Cord] = g =>
+    for {
+      i <- LazyList.from(g.indices)
+      j <- LazyList.from(g(i).indices)
+    } yield (i, j)
+
+  val bfs: Grid => Cord => Set[Cord] = g => init => {
+    @scala.annotation.tailrec
+    def go(current: Set[Cord], visited: Set[Cord]): Set[Cord] = {
+      if(current.isEmpty) {
+        visited
+      } else {
+        val next = for {
+          cord <- current
+          delta <- deltas
+          newR = getR(cord) + getR(delta)
+          newC = getC(cord) + getC(delta)
+          if newR >= 0 && newR < g.length && newC >= 0 && newC < g(newR).length && !visited.contains((newR, newC)) && g(newR)(newC) != '0'
+        } yield (newR, newC)
+
+        val newVisited = visited ++ next
+        go(next, newVisited)
+      }
     }
+
+    go(Set(init), Set(init))
   }
+
+  def numIslands(grid: Array[Array[Char]]): Int = {
+
+    cords(grid)
+      .foldLeft((0, Set.empty[Cord])) {case ((count,visited), cord) => {
+        if(visited.contains(cord)) {
+          (count, visited)
+        } else if(grid(getR(cord))(getC(cord)) == '1'){
+          val cells = bfs(grid)(cord)
+          (count + 1, visited ++ cells)
+        } else {
+          (count, visited)
+        }
+      }}._1
+  }
+}
