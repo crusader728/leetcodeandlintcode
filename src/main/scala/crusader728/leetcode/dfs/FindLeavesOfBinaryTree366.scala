@@ -1,4 +1,4 @@
-package scala.crusader728.leetcode.tree
+package scala.crusader728.leetcode.dfs
 
 import scala.crusader728.leetcode.TreeNode
 
