@@ -1,7 +1,5 @@
 package withJava.crusader728.leetcode.binarysearch;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
 
 public class KokoEatingBananas875 {
     public int minEatingSpeed(int[] piles, int h) {
