@@ -7,50 +7,40 @@ class FindFirstLastPositionInSortedArray34 {
         }
 
         int lowerBound = lower(nums, target);
-        int higherBound = higher(nums, target);
+        int higherBound = upper(nums, target);
 
-        return new int[] {lowerBound, higherBound};
+        if(nums[lowerBound] != target) {
+            return new int[] {-1, -1};
+        } else {
+            return new int[] {lowerBound, higherBound - 1};
+        }
     }
 
     private int lower(int[] nums, int target) {
         int l = 0;
-        int r = nums.length - 1;
+        int r = nums.length;
         while (l < r) {
             int mid = l + (r - l) / 2;
-            if(nums[mid] == target) {
-                r = mid;
-            } else if(nums[mid] < target) {
+            if(nums[mid] < target) {
                 l = mid + 1;
             } else {
-                r = mid - 1;
+                r = mid;
             }
         }
-
-        if(nums[l] != target) {
-            return -1;
-        } else {
-            return l;
-        }
+        return l;
     }
 
-    private int higher(int[] nums, int target) {
+    private int upper(int[] nums, int target) {
         int l = 0;
-        int r = nums.length - 1;
-        while (l < r) {
-            int mid = l + (r - l + 1) / 2;
-            if(nums[mid] == target) {
-                l = mid;
-            } else if(nums[mid] < target) {
+        int r = nums.length;
+        while(l < r) {
+            int mid = l + (r - l) / 2;
+            if(nums[mid] <= target) {
                 l = mid + 1;
             } else {
-                r = mid - 1;
+                r = mid;
             }
-        }
-
-        if(l >= nums.length || nums[l] != target) {
-            return -1;
-        } else {
-            return l;
-        }
+        }   
+        return l;
     }
 }
