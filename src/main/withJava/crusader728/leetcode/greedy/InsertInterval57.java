@@ -1,7 +1,5 @@
 package withJava.crusader728.leetcode.greedy;
 
-import java.util.*;
-
 public class InsertInterval57 {
     public int[][] insert(int[][] intervals, int[] newInterval) {
         int[] merged = new int[] {newInterval[0], newInterval[1]};
