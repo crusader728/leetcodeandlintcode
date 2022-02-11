@@ -25,7 +25,7 @@ public class RotateList61 {
         dummy.next = slow.next;
         fast.next = head;
         slow.next = null;
-        return dummy.head;
+        return dummy.next;
     }
 
     private int getLength(ListNode head) {
