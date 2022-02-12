@@ -1,6 +1,6 @@
 package withJava.crusader728.leetcode.binarysearch;
 
-public class Search2DMartix74 {
+public class Search2DMatrix74 {
     public boolean searchMatrix(int[][] matrix, int target) {
         if(matrix == null) {
             throw new IllegalArgumentException();
@@ -52,8 +52,8 @@ public class Search2DMartix74 {
     }
 
     public static void main(String[] args) {
-        Search2DMartix74 search2DMartix74 = new Search2DMartix74();
-        System.out.println(search2DMartix74.searchMatrix(new int[][] {
+        Search2DMatrix74 search2DMatrix74 = new Search2DMatrix74();
+        System.out.println(search2DMatrix74.searchMatrix(new int[][] {
             {1,3,5,7},
             {10, 11, 16, 20},
                 {23, 30, 34,60}
