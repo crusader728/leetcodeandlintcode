@@ -1,6 +1,7 @@
 package withJava.crusader728.leetcode.stack;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class LargestRectangleInHistogram84 {
     public int largestRectangleArea(int[] heights) {
@@ -11,7 +12,7 @@ public class LargestRectangleInHistogram84 {
         int[] left = new int[heights.length];
         int[] right = new int[heights.length];
 
-        Stack<Integer> monotonic = new Stack<>();
+        Deque<Integer> monotonic = new ArrayDeque<>();
         //populate right array
         for(int i = 0; i < heights.length; ++i) {
             if(monotonic.isEmpty()) {
