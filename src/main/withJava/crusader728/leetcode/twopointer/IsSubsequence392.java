@@ -22,6 +22,6 @@ public class IsSubsequence392 {
                 j++;
             }
         }
-
+        return i == s.length();
     }
 }
