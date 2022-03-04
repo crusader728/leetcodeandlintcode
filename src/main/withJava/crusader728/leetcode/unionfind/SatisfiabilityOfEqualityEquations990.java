@@ -46,10 +46,6 @@ public class SatisfiabilityOfEqualityEquations990 {
 
         return Arrays.stream(equations)
         .filter(eq -> eq.charAt(1) == '!')
-        .filter(eq -> {
-            return disjoinSet.find(eq.charAt(0)) == disjoinSet.find(eq.charAt(3));
-        })
-        .findFirst()
-        .isEmpty();
+        .noneMatch(eq -> disjoinSet.find(eq.charAt(0)) == disjoinSet.find(eq.charAt(3)));
     }
 }
