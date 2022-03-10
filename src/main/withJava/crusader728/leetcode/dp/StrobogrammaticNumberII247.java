@@ -1,6 +1,7 @@
 package withJava.crusader728.leetcode.dp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class StrobogrammaticNumberII247 {
@@ -12,12 +13,12 @@ public class StrobogrammaticNumberII247 {
     public List<String> generateStroboNumbers(int n, int finalLength) {
         if (n == 0) {
             // 0-digit strobogrammatic number is an empty string.
-            return new ArrayList<>(List.of(""));
+            return new ArrayList<>(Arrays.asList(""));
         }
         
         if (n == 1) {
             // 1-digit strobogrammatic numbers.
-            return new ArrayList<>(List.of("0", "1", "8"));
+            return new ArrayList<>(Arrays.asList("0", "1", "8"));
         }
         
         List<String> prevStroboNums = generateStroboNumbers(n - 2, finalLength);
