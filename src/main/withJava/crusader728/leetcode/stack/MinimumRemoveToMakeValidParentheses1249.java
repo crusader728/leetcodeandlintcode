@@ -7,22 +7,19 @@ import java.util.Stack;
 public class MinimumRemoveToMakeValidParentheses1249 {
     public String minRemoveToMakeValid(String s) {
         Set<Integer> toRemove = new HashSet<>();
-        Stack<Integer> lefts = new Stack<>();
+        Stack<Integer> stack = new Stack<>();
         for(int i = 0; i < s.length(); ++i) {
-            char ch = s.charAt(i);
-            if(ch == '(') {
-                lefts.push(i);
-            } else if(ch == ')') {
-                if(lefts.isEmpty()) {
+            if(s.charAt(i) == '(') {
+                stack.add(i);
+            } else if(s.charAt(i) == ')') {
+                if(stack.isEmpty()) {
                     toRemove.add(i);
                 } else {
-                    lefts.pop();
+                    stack.pop();
                 }
-            }
+            } 
         }
-        while(!lefts.isEmpty()) {
-            toRemove.add(lefts.pop());
-        }
+        toRemove.addAll(stack);
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < s.length(); ++i) {
             if(!toRemove.contains(i)) {
