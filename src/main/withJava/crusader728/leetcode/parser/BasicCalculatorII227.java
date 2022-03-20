@@ -4,84 +4,61 @@ public class BasicCalculatorII227 {
     public int calculate(String s) {
         if(s == null || s.length() == 0) {
             return 0;
-        }
-
+        } 
         String replaced = s.replaceAll("\\s+", "");
-        return expression(replaced, 0).result;
-
+        return term(replaced, 0).r;
     }
 
-    private Result number(String s, int idx) {
+    private Result number(String s, int i) {
         int sum = 0;
-        int i = idx;
-        while(i < s.length() && s.charAt(i) >= '0' && s.charAt(i) <= '9') {
-            sum = sum * 10;
-            sum += s.charAt(i) - '0';
-            i++;
+        int p = i;
+        while(p < s.length() && s.charAt(p) >= '0' && s.charAt(p) <= '9') {
+            sum = sum * 10 + s.charAt(p) - '0';
+            p++;
         }
-        return new Result(sum, i);
+        return new Result(p, sum);
     }
 
-    private Result element(String s, int idx) {
-        boolean isPositive = true;
-        int i = idx;
-        if(s.charAt(idx) == '-') {
-            isPositive = false;
-            i = idx + 1;
-        }
-
-        if(s.charAt(i) >= '0' && s.charAt(i) <= '9') {
-            Result r = number(s, i);
-            return new Result(isPositive ? r.result : -1 * r.result, r.pos);
-        } else if(s.charAt(i) == '(') {
-            Result r = expression(s, i + 1);
-            if(r.pos >= s.length() || s.charAt(r.pos) != ')') {
-                throw new RuntimeException();
-            } else {
-                return new Result(isPositive ? r.result : -1 * r.result, r.pos + 1);
-            }
-        } else {
-            throw new RuntimeException();
-        }
-    }
-
-    private Result expression(String s, int i) {
-        return term(s, i);
-    }
-
-    private Result factor(String s, int idx) {
-        Result left = element(s, idx);
-        while(left.pos < s.length() && (s.charAt(left.pos) == '*' || s.charAt(left.pos) == '/')) {
-            Result rhs = element(s, left.pos + 1);
-            if(s.charAt(left.pos) == '*') {
-                left = new Result(left.result * rhs.result, rhs.pos);
-            } else {
-                left = new Result(left.result / rhs.result, rhs.pos);
-            }
+    private Result term(String s, int i) {
+        Result left = factor(s, i);
+        while(left.pos < s.length() && (s.charAt(left.pos) == '+' || s.charAt(left.pos) == '-')) {
+            Result rhs = factor(s, left.pos + 1);
+            int newSum = s.charAt(left.pos) == '+' ? (left.r + rhs.r) : (left.r - rhs.r);
+            left = new Result(rhs.pos, newSum);
         }
         return left;
     }
 
-    private Result term(String s, int idx) {
-        Result lhs = factor(s, idx);
-        while(lhs.pos < s.length() && (s.charAt(lhs.pos) == '+' || s.charAt(lhs.pos) == '-')) {
-            Result rhs = factor(s, lhs.pos + 1);
-            if(s.charAt(lhs.pos) == '+') {
-                lhs = new Result(lhs.result + rhs.result, rhs.pos);
-            } else {
-                lhs = new Result(lhs.result - rhs.result, rhs.pos);
-            }
+    private Result factor(String s, int i) {
+        Result lhs = number(s, i);
+        while(lhs.pos < s.length() && (s.charAt(lhs.pos) == '*' || s.charAt(lhs.pos) == '/')) {
+            Result rhs = number(s, lhs.pos + 1);
+            int newSum = s.charAt(lhs.pos) == '*' ? (lhs.r * rhs.r) : (lhs.r / rhs.r);
+            lhs = new Result(rhs.pos, newSum);
         }
         return lhs;
     }
 
-    private class Result {
-        int result;
+    private static class Result {
         int pos;
+        int r;
 
-        Result(int r, int pos) {
-            this.result = r;
-            this.pos = pos;
+        Result(int p, int res) {
+            this.pos = p;
+            this.r = res;
         }
+
+        @Override
+        public String toString() {
+            return "Result{" +
+                    "pos=" + pos +
+                    ", r=" + r +
+                    '}';
+        }
+    }
+
+    public static void main(String[] args) {
+        BasicCalculatorII227 basicCalculatorII227 = new BasicCalculatorII227();
+        System.out.println(basicCalculatorII227.calculate("3 + 2 * 2"));
     }
 }
