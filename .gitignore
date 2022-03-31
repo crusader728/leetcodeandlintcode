@@ -159,3 +159,5 @@ buildNumber.properties
 hs_err_pid*
 
 # End of https://www.toptal.com/developers/gitignore/api/scala,maven
+
+src/main/withJava/crusader728/onepointthreearces/
