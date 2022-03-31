@@ -1,123 +1,152 @@
 package withJava.crusader728.leetcode.parser;
 
+import scala.concurrent.impl.FutureConvertersImpl.P;
+
 public class ValidNumber65 {
     public boolean isNumber(String s) {
-        if(s == null || s.length() == 0) {
+        State state = new Initial();
+        try {
+            for(int i = 0; i < s.length(); ++i) {
+                state = state.read(s.charAt(i));
+            }
+        } catch(IllegalArgumentException e) {
             return false;
         }
+        return state.isValidEndState();
+    }
 
-        Result base = base(s, 0);
-        if(base == null) {
+    private interface State {
+        State read(char ch);
+        default boolean isValidEndState() {
             return false;
-        }
-
-        Result exp = exp(s, base.pos);
-        if(exp == null) {
-            return false;
-        } else if(exp.res.equals("")) {
-            return exp.pos == s.length();
-        } else {
-            return exp.pos == s.length();
         }
     }
 
-    private Result base(String s, int pos) {
-        StringBuilder builder = new StringBuilder();
-        int idx = pos;
-        boolean seenSign = false;
-        boolean seenDot = false;
-        boolean seenDigits = false;
-        while(idx < s.length()) {
-            if(s.charAt(idx) == '-' || s.charAt(idx) == '+') {
-                if(!seenSign && !seenDigits && !seenDot) {
-                    seenSign = true;
-                    builder.append(s.charAt(idx));
-                    idx++;
-                } else {
-                    return null;
-                }
-            } else if(s.charAt(idx) >= '0' && s.charAt(idx) <= '9') {
-                while(idx < s.length() && s.charAt(idx) >= '0' && s.charAt(idx) <= '9') {
-                    builder.append(s.charAt(idx));
-                    idx++;
-                }
-                seenDigits = true;
-            } else if(s.charAt(idx) == '.') {
-                if(!seenDot) {
-                    builder.append(s.charAt(idx));
-                    seenDot = true;
-                    idx++;
-                } else {
-                    return null;
-                }
+    private static class Initial implements State {
+        @Override
+        public State read(char ch) {
+            if(ch == '+' || ch == '-') {
+                return new Sign();
+            } else if(ch >= '0' && ch <= '9') {
+                return new Integral();
+            } else if(ch =='.') {
+                return new Dot();
             } else {
-                break;
+                throw new IllegalArgumentException();
             }
         }
-        if(seenDigits) {
-            return new Result(idx, builder.toString());
-        } else {
-            return null;
-        }
     }
 
-    private Result exp(String s, int pos) {
-        StringBuilder builder = new StringBuilder();
-        int idx = pos;
-        boolean seenE = false;
-        boolean seenDigits = false;
-        boolean seenSign = false;
-        while(idx < s.length()) {
-            if(s.charAt(idx) == 'e' || s.charAt(idx) == 'E') {
-                if(!seenE) {
-                    builder.append(s.charAt(idx));
-                    idx++;
-                    seenE = true;
-                } else {
-                    return null;
-                }
-            } else if(s.charAt(idx) >= '0' && s.charAt(idx) <= '9') {
-                if(seenE) {
-                    while(idx < s.length() && s.charAt(idx) >= '0' && s.charAt(idx) <= '9') {
-                        builder.append(s.charAt(idx));
-                        idx++;
-                    }
-                    seenDigits = true;
-                } else {
-                    return null;
-                }
-            } else if(s.charAt(idx) == '+' || s.charAt(idx) == '-') {
-                if(seenE && !seenSign && !seenDigits) {
-                    builder.append(s.charAt(idx));
-                    idx++;
-                    seenSign = true;
-                } else {
-                    return null;
-                }
+    private static class Sign implements State {
+
+        @Override
+        public State read(char ch) {
+            if(ch >= '0' && ch <= '9') {
+                return new Integral();
+            } else if(ch == '.') {
+                return new Dot();
             } else {
-                break;
+                throw new IllegalArgumentException();
             }
         }
-        if(seenE == false && builder.length() == 0) {
-            return new Result(idx, builder.toString());
-        } else if(seenE == false) {
-            return null;
-        } else if(seenDigits == false) {
-            return null;
-        } else {
-            return new Result(idx, builder.toString());
+    }
+
+    private static class Integral implements State {
+
+        @Override
+        public State read(char ch) {
+            if(ch >= '0' && ch <= '9') {
+                return this;
+            } else if(ch == '.') {
+                return new Decimal();
+            } else if(ch == 'e' || ch == 'E') {
+                return new Exp();
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
+        public boolean isValidEndState() {
+            return true;
         }
     }
 
-    private static class Result {
-        int pos;
-        String res;
-
-        Result(int p, String r) {
-            this.pos = p;
-            this.res = r;
+    private static class Dot implements State {
+        @Override
+        public State read(char ch) {
+            if(ch >= '0' && ch <= '9') {
+                return new Decimal();
+            } else {
+                throw new IllegalArgumentException();
+            }
         }
     }
+
+    private static class Decimal implements State {
+
+        @Override
+        public State read(char ch) {
+            if(ch >= '0' && ch <= '9') {
+                return this;
+            } else if(ch == 'e' || ch == 'E') {
+                return new Exp();
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
+        public boolean isValidEndState() {
+            return true;
+        }
+    }
+
+    private static class Exp implements State {
+        @Override
+        public State read(char ch) {
+            if(ch == '+' || ch == '-') {
+                return new PowerSign();
+            } else if(ch >= '0' && ch <= '9') {
+                return new PowerIntegral();
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+    }
+
+    private static class PowerSign implements State {
+
+        @Override
+        public State read(char ch) {
+            if(ch >= '0' && ch <= '9') {
+                return new PowerIntegral();
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+
+    }
+
+    private static class PowerIntegral implements State {
+
+        @Override
+        public State read(char ch) {
+            if(ch >= '0' && ch <= '9') {
+                return this;
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
+        public boolean isValidEndState() {
+            return true;
+        }
+
+    }
+
+
 
     public static void main(String[] args) {
         ValidNumber65 validNumber65 = new ValidNumber65();
