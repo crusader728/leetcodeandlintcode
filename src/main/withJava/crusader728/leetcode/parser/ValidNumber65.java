@@ -1,6 +1,5 @@
 package withJava.crusader728.leetcode.parser;
 
-import scala.concurrent.impl.FutureConvertersImpl.P;
 
 public class ValidNumber65 {
     public boolean isNumber(String s) {
@@ -119,7 +118,7 @@ public class ValidNumber65 {
 
         @Override
         public State read(char ch) {
-            if(ch >= '0' && ch <= '9') {
+            if(ch >= '0' || ch <= '9') {
                 return new PowerIntegral();
             } else {
                 throw new IllegalArgumentException();
@@ -132,7 +131,7 @@ public class ValidNumber65 {
 
         @Override
         public State read(char ch) {
-            if(ch >= '0' && ch <= '9') {
+            if(ch >= '0' || ch <= '9') {
                 return this;
             } else {
                 throw new IllegalArgumentException();
