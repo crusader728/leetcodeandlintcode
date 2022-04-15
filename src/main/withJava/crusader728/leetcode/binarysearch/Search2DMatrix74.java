@@ -2,61 +2,47 @@ package withJava.crusader728.leetcode.binarysearch;
 
 public class Search2DMatrix74 {
     public boolean searchMatrix(int[][] matrix, int target) {
-        if(matrix == null) {
-            throw new IllegalArgumentException();
-        }
-
-        int m = matrix.length;
-        int n = matrix[0].length;
-
-        int low = 0;
-        int high = m;
-        while(low < high) {
-            int mid = low + (high - low) / 2;
-            int value = matrix[mid][0];
-            if(value < target) {
-                low = mid + 1;
+        int l = 0;
+        int r = matrix.length;
+        while(l < r) {
+            int mid = (r - l) / 2 + l;
+            if(matrix[mid][0] < target) {
+                l = mid + 1;
             } else {
-                high = mid;
+                r = mid;
             }
         }
-        if(low == 0) {
-            if(matrix[low][0] == target) {
-                return true;
-            } else {
-                return false;
-            }
+        
+        if(l == 0 && matrix[l][0] == target) {
+            return true;
+        } else if(l == 0) {
+            return false;
+        } else if(l < matrix.length && matrix[l][0] == target) {
+            return true;
         } else {
-            if(low == m) {
-                low = low - 1;
+            int x = l - 1;
+            int low = 0;
+            int high = matrix[x].length;
+            while(low < high) {
+                int mid = low + (high - low) / 2;
+                if(matrix[x][mid] < target) {
+                    low = mid + 1;
+                } else {
+                    high = mid;
+                }
+            }
+            if(low >= matrix[x].length) {
+                return false;
             } else {
-                if(matrix[low][0] == target) {
-                    return true;
-                } else {
-                    low = low - 1;
-                }
+                return matrix[x][low] == target;
             }
-            int left = 0;
-            int right = n;
-            while(left < right) {
-                int mid = left + (right - left) / 2;
-                int value = matrix[low][mid];
-                if(value < target) {
-                    left = mid + 1;
-                } else {
-                    right = mid;
-                }
-            }
-            return left == n ? false : matrix[low][left] == target;
         }
     }
 
     public static void main(String[] args) {
         Search2DMatrix74 search2DMatrix74 = new Search2DMatrix74();
         System.out.println(search2DMatrix74.searchMatrix(new int[][] {
-            {1,3,5,7},
-            {10, 11, 16, 20},
-                {23, 30, 34,60}
+            {1, 3}
         }, 3));
     }
 
