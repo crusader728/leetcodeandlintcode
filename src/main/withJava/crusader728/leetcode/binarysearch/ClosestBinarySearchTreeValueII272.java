@@ -54,10 +54,27 @@ public class ClosestBinarySearchTreeValueII272 {
     }
 
     private void inorder(TreeNode root, List<Integer> allvalues) {
+        if(root == null) {
+            return;
+        }
+        inorder(root.left, allvalues);
+        allvalues.add(root.val);
+        inorder(root.right, allvalues);
+
     }
 
     private int binarySearch(List<Integer> allvalues, double target) {
-        return 0;
+        int l = 0;
+        int r = allvalues.size();
+        while(l < r) {
+            int mid = l + (r - l) / 2;
+            if(allvalues.get(mid) < target) {
+                l = mid + 1;
+            } else {
+                r = mid;
+            }
+        }
+        return l;
     }
 
     private static class TreeNode {
